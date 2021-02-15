@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  application:
+    container_name: sw-nest-integrator-application
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3000:3000
+      - 9229:9229
+    command: npm run start:dev
+    env_file:
+      - .env
+    networks:
+      - sw-nest-integrator-network
+    depends_on:
+      - postgres
+  postgres:
+    container_name: sw-nest-integrator-postgres
+    image: postgres:12
+    networks:
+      - sw-nest-integrator-network
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: sw-nest-integrator
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+networks:
+  sw-nest-integrator-network:
+volumes:
+  pgdata:
