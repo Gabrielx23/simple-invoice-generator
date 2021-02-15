@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   application:
-    container_name: sw-nest-integrator-application
+    container_name: invoices-application
     build:
       context: .
       target: development
@@ -16,24 +16,22 @@ services:
     env_file:
       - .env
     networks:
-      - sw-nest-integrator-network
+      - invoices-network
     depends_on:
-      - postgres
-  postgres:
-    container_name: sw-nest-integrator-postgres
-    image: postgres:12
+      - mysql
+  mysql:
+    container_name: invoices-mysql
+    image: mysql:5.7
+    command: --sql_mode=""
     networks:
-      - sw-nest-integrator-network
+      - invoices-network
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: sw-nest-integrator
-      PG_DATA: /var/lib/postgresql/data
-    ports:
-      - 5432:5432
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: invoices
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./.docker/data/mysql/:/var/lib/mysql
+      - ./.docker/logs/mysql/:/var/log/mysql
+    ports:
+      - "3306:3306"
 networks:
-  sw-nest-integrator-network:
-volumes:
-  pgdata:
+  invoices-network:
