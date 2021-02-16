@@ -22,7 +22,7 @@ export class InvoiceRowEntity extends BaseEntity {
   title: string;
 
   @ApiProperty({ example: 1 })
-  @Column('number')
+  @Column('integer')
   amount: number;
 
   @ApiProperty({ example: InvoiceRowUnitEnum.piece })
@@ -34,7 +34,7 @@ export class InvoiceRowEntity extends BaseEntity {
   price: string;
 
   @ApiProperty({ example: 1 })
-  @Column('number', { nullable: true })
+  @Column('integer', { nullable: true })
   vat: number;
 
   @ManyToOne('InvoiceEntity', 'rows')

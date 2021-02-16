@@ -1,5 +1,7 @@
 import { join } from 'path';
 import { ConnectionOptions } from 'typeorm';
+import { InvoiceEntity } from '../../Invoice/Domain/Entities/invoice.entity';
+import { InvoiceRowEntity } from '../../Invoice/Domain/Entities/invoice-row.entity';
 
 export const connectionOptions: ConnectionOptions = {
   type: 'mysql',
@@ -11,6 +13,11 @@ export const connectionOptions: ConnectionOptions = {
   migrationsRun: true,
   synchronize: false,
   logging: false,
-  entities: [join(__dirname, '../../*{.entity.ts,.entity.js}')],
-  migrations: [join(__dirname, '../../*{Migration.ts, Migration.js}')],
+  entities: [InvoiceEntity, InvoiceRowEntity],
+  migrations: [
+    join(
+      __dirname,
+      '../../Invoice/Infrastructure/Database/Migrations/*{.ts,.js}',
+    ),
+  ],
 };
