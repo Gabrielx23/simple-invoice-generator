@@ -10,6 +10,7 @@ export class CreateInvoicesTableMigration1613401878965
             place VARCHAR(255) NOT NULL,
             invoiceDate DATE NOT NULL,
             deliveryDate DATE NULL,
+            total VARCHAR(255) NOT NULL,
             paymentDate DATE NULL,
             withVat INTEGER(1) DEFAULT 0,
             paymentType VARCHAR(255) NOT NULL,

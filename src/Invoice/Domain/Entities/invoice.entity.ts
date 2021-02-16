@@ -43,6 +43,10 @@ export class InvoiceEntity extends BaseEntity {
   @Column('boolean')
   withVat: boolean;
 
+  @ApiProperty({ example: '12.99' })
+  @Column('text')
+  total: string;
+
   @ApiProperty({ example: PaymentTypeEnum.bankTransfer })
   @Column('text')
   paymentType: PaymentTypeEnum;
