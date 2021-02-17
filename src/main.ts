@@ -14,7 +14,6 @@ async function bootstrap() {
     .setTitle(configService.get(EnvKeyEnum.SwaggerTitle))
     .setDescription(configService.get(EnvKeyEnum.SwaggerDescription))
     .setVersion(configService.get(EnvKeyEnum.SwaggerVersion))
-    .addBearerAuth({ in: 'header', type: 'http' })
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
