@@ -7,14 +7,15 @@ import { InvoiceService } from './Domain/invoice.service';
 import { InvoiceFactory } from './Domain/invoice.factory';
 import { actions } from './App/Actions';
 import { controllers } from './UI/Controllers';
+import { queries } from './App/Queries';
 
 @Module({
   imports: [
     CqrsModule,
     TypeOrmModule.forFeature([InvoiceOrmRepository, InvoiceRowOrmRepository]),
   ],
-  providers: [...actions, InvoiceService, InvoiceFactory],
-  exports: [...actions],
+  providers: [...actions, ...queries, InvoiceService, InvoiceFactory],
+  exports: [],
   controllers: [...controllers],
 })
 export class InvoiceModule {}
