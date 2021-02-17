@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { NoRowDuplicatesPolicy } from './no-row-duplicates.policy';
 import { InvoiceRowEntity } from '../Entities/invoice-row.entity';
+import { InvoiceEntity } from '../Entities/invoice.entity';
 
 const row1 = new InvoiceRowEntity();
 row1.title = 'title 1';
@@ -20,9 +21,9 @@ describe('NoRowDuplicatesPolicy', () => {
 
   describe('isSatisfied', () => {
     it('throws exception if rows array has duplicated rows by title', async () => {
-      await expect(policy.isSatisfied([row1, row2, row3])).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        policy.isSatisfied(new InvoiceEntity(), [row1, row2, row3]),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 });

@@ -1,3 +1,3 @@
 export interface PolicyInterface {
-  isSatisfied(element);
+  isSatisfied(data, rows);
 }

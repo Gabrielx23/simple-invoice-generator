@@ -51,7 +51,7 @@ export class InvoiceRepository {
 
   public async storeRows(
     invoiceEntity: InvoiceEntity,
-    rows: Array<Partial<InvoiceRowEntity>> | Array<InvoiceRowEntity>,
+    rows: Array<Partial<InvoiceRowEntity>>,
   ): Promise<void> {
     for (const row of rows) {
       row.invoice = invoiceEntity;

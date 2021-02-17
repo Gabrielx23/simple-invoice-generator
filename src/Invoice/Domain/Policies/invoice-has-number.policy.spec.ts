@@ -13,9 +13,9 @@ describe('InvoiceHasNumberPolicy', () => {
 
   describe('isSatisfied', () => {
     it('throws exception if invoice number is not set', async () => {
-      await expect(policy.isSatisfied(invoiceEntity)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        policy.isSatisfied(invoiceEntity, invoiceEntity.rows),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 });

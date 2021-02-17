@@ -1,12 +1,13 @@
 import { InvoiceEntity } from '../Entities/invoice.entity';
-import { InvoiceEntityPolicy } from './invoice-entity.policy';
 import { PolicyInterface } from './policy.interface';
 import { BadRequestException } from '@nestjs/common';
+import { InvoiceRowEntity } from '../Entities/invoice-row.entity';
 
-export class CorrectInvoiceDatesPolicy
-  extends InvoiceEntityPolicy
-  implements PolicyInterface {
-  public async isSatisfied(invoice: InvoiceEntity): Promise<void> {
+export class CorrectInvoiceDatesPolicy implements PolicyInterface {
+  public async isSatisfied(
+    invoice: InvoiceEntity | Partial<InvoiceEntity>,
+    rows: Array<Partial<InvoiceRowEntity>>,
+  ): Promise<void> {
     const invoiceDate = new Date(invoice.invoiceDate);
     const paymentDate = new Date(invoice.paymentDate);
     const deliveryDate = new Date(invoice.deliveryDate);

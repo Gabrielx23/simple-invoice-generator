@@ -2,33 +2,18 @@ import { AggregateRoot } from '@nestjs/cqrs';
 import { InvoiceEntity } from './Entities/invoice.entity';
 import { InvoiceRowEntity } from './Entities/invoice-row.entity';
 import { PolicyInterface } from './Policies/policy.interface';
-import { InvoiceEntityPolicy } from './Policies/invoice-entity.policy';
-import { InvoiceRowsPolicy } from './Policies/invoice-rows.policy';
-import { BadRequestException } from '@nestjs/common';
 
 export class Invoice extends AggregateRoot {
   constructor(
     public readonly data: Partial<InvoiceEntity> | InvoiceEntity,
-    public readonly rows:
-      | Array<Partial<InvoiceRowEntity>>
-      | Array<InvoiceRowEntity>,
+    public readonly rows: Array<Partial<InvoiceRowEntity>>,
   ) {
     super();
   }
 
   public async book(policies: Array<PolicyInterface>): Promise<void> {
     for (const policy of policies) {
-      if (policy instanceof InvoiceEntityPolicy) {
-        await policy.isSatisfied(this.data);
-        continue;
-      }
-
-      if (policy instanceof InvoiceRowsPolicy) {
-        await policy.isSatisfied(this.rows);
-        continue;
-      }
-
-      throw new BadRequestException('One of policies is not supported');
+      await policy.isSatisfied(this.data, this.rows);
     }
   }
 
@@ -52,20 +37,20 @@ export class Invoice extends AggregateRoot {
       total += row.vat ? price * (1 + row.vat / 100) : price;
     }
 
-    this.data.total = `${total}`;
+    this.data.total = total.toFixed(2);
   }
 
-  public getTotalWithoutVat(): number {
+  public getTotalWithoutVat(): string {
     let total = 0;
 
     for (const row of this.rows) {
       total += parseFloat(row.price);
     }
 
-    return total;
+    return total.toFixed(2);
   }
 
-  public getTotalVat(): number {
+  public getTotalVat(): string {
     let total = 0;
 
     for (const row of this.rows) {
@@ -73,6 +58,6 @@ export class Invoice extends AggregateRoot {
       total += row.vat ? price * (row.vat / 100) : 0;
     }
 
-    return total;
+    return total.toFixed(2);
   }
 }

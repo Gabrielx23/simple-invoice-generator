@@ -17,18 +17,18 @@ describe('CorrectInvoiceDatesPolicy', () => {
       invoiceEntity.deliveryDate = new Date('2021-02-01');
       invoiceEntity.paymentDate = new Date('2021-02-02');
 
-      await expect(policy.isSatisfied(invoiceEntity)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        policy.isSatisfied(invoiceEntity, invoiceEntity.rows),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('throws exception if invoice date is greater than payment date', async () => {
       invoiceEntity.deliveryDate = new Date('2021-02-02');
       invoiceEntity.paymentDate = new Date('2021-02-01');
 
-      await expect(policy.isSatisfied(invoiceEntity)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        policy.isSatisfied(invoiceEntity, invoiceEntity.rows),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 });
