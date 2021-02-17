@@ -6,6 +6,7 @@ import { InvoiceRowOrmRepository } from './Infrastructure/Database/Repositories/
 import { InvoiceService } from './Domain/invoice.service';
 import { InvoiceFactory } from './Domain/invoice.factory';
 import { actions } from './App/Actions';
+import { controllers } from './UI/Controllers';
 
 @Module({
   imports: [
@@ -14,5 +15,6 @@ import { actions } from './App/Actions';
   ],
   providers: [...actions, InvoiceService, InvoiceFactory],
   exports: [...actions],
+  controllers: [...controllers],
 })
 export class InvoiceModule {}

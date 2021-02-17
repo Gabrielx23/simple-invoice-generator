@@ -9,9 +9,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { PaymentTypeEnum } from '../../../Invoice/Domain/Enum/payment-type.enum';
 import { Type } from 'class-transformer';
-import { AddInvoiceRowDTO } from './add-invoice-row.dto';
+import { InvoiceRowDTO } from './invoice-row.dto';
+import { PaymentTypeEnum } from '../../Domain/Enum/payment-type.enum';
 
 export class CreateInvoiceDTO {
   @ApiProperty({ example: '2021-08-10' })
@@ -34,14 +34,20 @@ export class CreateInvoiceDTO {
   @IsEnum(PaymentTypeEnum)
   paymentType: PaymentTypeEnum;
 
+  @ApiProperty({ example: 'Warsaw' })
+  @MinLength(3)
+  @MaxLength(30)
+  place: string;
+
   @ApiProperty({ example: 'John Doe' })
   @MinLength(3)
   @MaxLength(30)
   createdBy: string;
 
+  @ApiProperty({ type: [InvoiceRowDTO] })
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => AddInvoiceRowDTO)
-  rows: AddInvoiceRowDTO[];
+  @Type(() => InvoiceRowDTO)
+  rows: InvoiceRowDTO[];
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InvoiceService } from '../../Domain/invoice.service';
 import { InvoiceFactory } from '../../Domain/invoice.factory';
-import { CreateInvoiceDTO } from '../../../App/Invoice/DTO/create-invoice.dto';
 import { policyCollection } from '../../Domain/policy.collection';
+import { CreateInvoiceDTO } from '../../UI/DTO/create-invoice.dto';
 
 @Injectable()
 export class CreateInvoiceAction {

@@ -3,9 +3,9 @@ import { InvoiceService } from '../../Domain/invoice.service';
 import { InvoiceFactory } from '../../Domain/invoice.factory';
 import { CreateInvoiceAction } from './create-invoice.action';
 import { Invoice } from '../../Domain/invoice';
-import { CreateInvoiceDTO } from '../../../App/Invoice/DTO/create-invoice.dto';
-import { AddInvoiceRowDTO } from '../../../App/Invoice/DTO/add-invoice-row.dto';
 import { policyCollection } from '../../Domain/policy.collection';
+import { CreateInvoiceDTO } from '../../UI/DTO/create-invoice.dto';
+import { InvoiceRowDTO } from '../../UI/DTO/invoice-row.dto';
 
 const invoiceServiceMock = () => ({
   getInvoiceAmountThisYear: jest.fn(),
@@ -44,7 +44,7 @@ describe('CreateInvoiceAction', () => {
   });
 
   describe('execute', () => {
-    const rowDto = new AddInvoiceRowDTO();
+    const rowDto = new InvoiceRowDTO();
 
     const dto = new CreateInvoiceDTO();
     dto.rows = [rowDto];

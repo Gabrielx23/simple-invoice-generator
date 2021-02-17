@@ -11,10 +11,10 @@ export class CreateInvoiceRowsTableMigration1613405395801
             unit VARCHAR(10) NULL,
             price VARCHAR(255) NOT NULL,
             vat INT(2) NULL,
-            invoice VARCHAR(255) NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (invoice) REFERENCES invoices(id) ON DELETE CASCADE 
+            invoiceId VARCHAR(255) NOT NULL,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (invoiceId) REFERENCES invoices(id) ON DELETE CASCADE 
         )
     `);
   }

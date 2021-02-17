@@ -1,14 +1,15 @@
 import {
   IsEnum,
   IsNumber,
+  IsOptional,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { InvoiceRowUnitEnum } from '../../../Invoice/Domain/Enum/invoice-row-unit.enum';
+import { InvoiceRowUnitEnum } from '../../Domain/Enum/invoice-row-unit.enum';
 
-export class AddInvoiceRowDTO {
+export class InvoiceRowDTO {
   @ApiProperty({ example: 'IT Service 03/21' })
   @MinLength(3)
   @MaxLength(255)
@@ -28,5 +29,6 @@ export class AddInvoiceRowDTO {
 
   @ApiProperty({ example: 23 })
   @IsNumber()
+  @IsOptional()
   vat: number;
 }

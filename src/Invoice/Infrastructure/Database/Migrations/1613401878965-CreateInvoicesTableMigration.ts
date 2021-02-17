@@ -15,8 +15,8 @@ export class CreateInvoicesTableMigration1613401878965
             withVat INTEGER(1) DEFAULT 0,
             paymentType VARCHAR(255) NOT NULL,
             createdBy VARCHAR(255) NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
     `);
   }
