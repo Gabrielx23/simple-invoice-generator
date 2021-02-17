@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoiceOrmRepository } from '../Infrastructure/Database/Repositories/invoice-orm.repository';
 import { Invoice } from './invoice';
@@ -8,7 +8,7 @@ import { InvoiceRowEntity } from './Entities/invoice-row.entity';
 import { InvoiceEntity } from './Entities/invoice.entity';
 
 @Injectable()
-export class InvoiceRepository {
+export class InvoiceService {
   constructor(
     @InjectRepository(InvoiceOrmRepository)
     private readonly invoiceOrmRepository: InvoiceOrmRepository,
@@ -16,6 +16,17 @@ export class InvoiceRepository {
     private readonly invoiceRowOrmRepository: InvoiceRowOrmRepository,
     private readonly invoiceFactory: InvoiceFactory,
   ) {}
+
+  public async getInvoiceAmountThisYear(): Promise<number> {
+    const currentDate = new Date();
+    const startDate = new Date(`${currentDate.getFullYear()}-01-01`);
+    const endDate = new Date(`${currentDate.getFullYear() + 1}-01-01`);
+
+    return await this.invoiceOrmRepository.getInvoicesCountInTimeRange(
+      startDate,
+      endDate,
+    );
+  }
 
   public async get(id: string): Promise<Invoice | null> {
     const invoiceEntity = await this.invoiceOrmRepository.getById(id);
@@ -32,6 +43,10 @@ export class InvoiceRepository {
   }
 
   public async update(invoice: Invoice): Promise<void> {
+    if (!invoice.isBooked()) {
+      throw new BadRequestException('Invoice need to booked before save.');
+    }
+
     const invoiceEntity = await this.invoiceOrmRepository.save(invoice.data);
 
     await this.invoiceRowOrmRepository.delete({ invoice: invoiceEntity });
@@ -40,6 +55,10 @@ export class InvoiceRepository {
   }
 
   public async store(invoice: Invoice): Promise<void> {
+    if (!invoice.isBooked()) {
+      throw new BadRequestException('Invoice need to booked before save.');
+    }
+
     const invoiceEntityPartial = this.invoiceOrmRepository.create(invoice.data);
 
     const invoiceEntity = await this.invoiceOrmRepository.save(

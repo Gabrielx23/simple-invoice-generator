@@ -33,6 +33,14 @@ describe('Invoice', () => {
     invoice = new Invoice(invoiceEntity, invoiceEntity.rows);
   });
 
+  describe('isBooked', () => {
+    it('returns current booked property value', async () => {
+      const result = invoice.isBooked();
+
+      expect(result).toBeFalsy();
+    });
+  });
+
   describe('book', () => {
     it('checks all set policies', async () => {
       await invoice.book([policy, policy]);
@@ -42,6 +50,12 @@ describe('Invoice', () => {
         invoiceEntity,
         invoiceEntity.rows,
       );
+    });
+
+    it('sets booked property as true', async () => {
+      await invoice.book([policy, policy]);
+
+      expect(invoice.isBooked()).toBeTruthy();
     });
   });
 

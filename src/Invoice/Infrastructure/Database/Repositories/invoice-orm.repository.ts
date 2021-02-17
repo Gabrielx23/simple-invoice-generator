@@ -8,19 +8,15 @@ import {
 
 @EntityRepository(InvoiceEntity)
 export class InvoiceOrmRepository extends Repository<InvoiceEntity> {
-  public async invoiceAmountThisYear(): Promise<number> {
-    const currentDate = new Date();
-    const startDate = new Date(`${currentDate.getFullYear()}-01-01`);
-    const endDate = new Date(`${currentDate.getFullYear() + 1}-01-01`);
-
+  public async getInvoicesCountInTimeRange(
+    start: Date,
+    end: Date,
+  ): Promise<number> {
     return this.createQueryBuilder('invoices')
-      .where(
-        'invoices.invoiceDate >= :startDate and invoices.invoiceDate < :endDate',
-        {
-          startDate,
-          endDate,
-        },
-      )
+      .where('invoices.invoiceDate >= :start and invoices.invoiceDate < :end', {
+        start,
+        end,
+      })
       .getCount();
   }
 

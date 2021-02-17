@@ -4,6 +4,8 @@ import { InvoiceRowEntity } from './Entities/invoice-row.entity';
 import { PolicyInterface } from './Policies/policy.interface';
 
 export class Invoice extends AggregateRoot {
+  private booked = false;
+
   constructor(
     public readonly data: Partial<InvoiceEntity> | InvoiceEntity,
     public readonly rows: Array<Partial<InvoiceRowEntity>>,
@@ -11,13 +13,19 @@ export class Invoice extends AggregateRoot {
     super();
   }
 
+  public isBooked(): boolean {
+    return this.booked;
+  }
+
   public async book(policies: Array<PolicyInterface>): Promise<void> {
     for (const policy of policies) {
       await policy.isSatisfied(this.data, this.rows);
     }
+
+    this.booked = true;
   }
 
-  public generateNumber(invoiceAmountThisYear: number): Promise<void> {
+  public generateNumber(invoiceAmountThisYear: number): void {
     if (this.data.number) {
       return;
     }

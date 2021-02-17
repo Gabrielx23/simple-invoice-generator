@@ -1,17 +1,19 @@
 import { Test } from '@nestjs/testing';
-import { InvoiceRepository } from './invoice.repository';
+import { InvoiceService } from './invoice.service';
 import { InvoiceFactory } from './invoice.factory';
 import { InvoiceOrmRepository } from '../Infrastructure/Database/Repositories/invoice-orm.repository';
 import { InvoiceRowOrmRepository } from '../Infrastructure/Database/Repositories/invoice-row-orm.repository';
 import { InvoiceEntity } from './Entities/invoice.entity';
 import { InvoiceRowEntity } from './Entities/invoice-row.entity';
 import { Invoice } from './invoice';
+import { BadRequestException } from '@nestjs/common';
 
 const invoiceOrmRepositoryMock = () => ({
   getById: jest.fn(),
   create: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
+  getInvoicesCountInTimeRange: jest.fn(),
 });
 
 const invoiceRowOrmRepositoryMock = () => ({
@@ -31,8 +33,8 @@ invoiceEntity.rows = [invoiceRowEntity];
 
 const invoice = new Invoice(invoiceEntity, invoiceEntity.rows);
 
-describe('InvoiceRepository', () => {
-  let invoiceRepository: InvoiceRepository,
+describe('InvoiceService', () => {
+  let invoiceService: InvoiceService,
     invoiceFactory: InvoiceFactory,
     invoiceOrmRepository: InvoiceOrmRepository,
     invoiceRowOrmRepository: InvoiceRowOrmRepository;
@@ -52,16 +54,42 @@ describe('InvoiceRepository', () => {
     invoiceFactory = await module.resolve(InvoiceFactory);
     invoiceOrmRepository = await module.get(InvoiceOrmRepository);
     invoiceRowOrmRepository = await module.get(InvoiceRowOrmRepository);
-    invoiceRepository = new InvoiceRepository(
+    invoiceService = new InvoiceService(
       invoiceOrmRepository,
       invoiceRowOrmRepository,
       invoiceFactory,
     );
+
+    await invoice.book([]);
+  });
+
+  describe('getInvoiceAmountThisYear', () => {
+    it('uses invoice orm repository to obtain invoices from current year', async () => {
+      const currentDate = new Date();
+      const startDate = new Date(`${currentDate.getFullYear()}-01-01`);
+      const endDate = new Date(`${currentDate.getFullYear() + 1}-01-01`);
+
+      await invoiceService.getInvoiceAmountThisYear();
+
+      expect(
+        invoiceOrmRepository.getInvoicesCountInTimeRange,
+      ).toHaveBeenCalledWith(startDate, endDate);
+    });
+
+    it('returns count of invoices from current year', async () => {
+      jest
+        .spyOn(invoiceOrmRepository, 'getInvoicesCountInTimeRange')
+        .mockResolvedValue(10);
+
+      const result = await invoiceService.getInvoiceAmountThisYear();
+
+      expect(result).toEqual(10);
+    });
   });
 
   describe('get', () => {
     it('uses invoice orm repository to obtain invoice entity by id', async () => {
-      await invoiceRepository.get('id');
+      await invoiceService.get('id');
 
       expect(invoiceOrmRepository.getById).toHaveBeenCalledWith('id');
     });
@@ -69,7 +97,7 @@ describe('InvoiceRepository', () => {
     it('returns null if invoice not exist by id', async () => {
       jest.spyOn(invoiceOrmRepository, 'getById').mockResolvedValue(undefined);
 
-      const result = await invoiceRepository.get('id');
+      const result = await invoiceService.get('id');
 
       expect(result).toEqual(null);
     });
@@ -79,7 +107,7 @@ describe('InvoiceRepository', () => {
         .spyOn(invoiceOrmRepository, 'getById')
         .mockResolvedValue(invoiceEntity);
 
-      await invoiceRepository.get('id');
+      await invoiceService.get('id');
 
       expect(invoiceFactory.create).toBeCalledWith(
         invoiceEntity,
@@ -94,15 +122,21 @@ describe('InvoiceRepository', () => {
 
       jest.spyOn(invoiceFactory, 'create').mockReturnValue(invoice);
 
-      const result = await invoiceRepository.get('id');
+      const result = await invoiceService.get('id');
 
       expect(result).toEqual(invoice);
     });
   });
 
   describe('store', () => {
+    it('throws exception if invoice is not booked', async () => {
+      await expect(
+        invoiceService.store(new Invoice(invoiceEntity, invoiceEntity.rows)),
+      ).rejects.toThrow(BadRequestException);
+    });
+
     it('uses invoice orm repository to create entity partial', async () => {
-      await invoiceRepository.store(invoice);
+      await invoiceService.store(invoice);
 
       expect(invoiceOrmRepository.create).toBeCalledWith(invoiceEntity);
     });
@@ -110,7 +144,7 @@ describe('InvoiceRepository', () => {
     it('uses invoice orm repository to save invoice partial', async () => {
       jest.spyOn(invoiceOrmRepository, 'create').mockReturnValue(invoiceEntity);
 
-      await invoiceRepository.store(invoice);
+      await invoiceService.store(invoice);
 
       expect(invoiceOrmRepository.save).toHaveBeenCalledWith(invoiceEntity);
     });
@@ -122,7 +156,7 @@ describe('InvoiceRepository', () => {
         .spyOn(invoiceRowOrmRepository, 'create')
         .mockReturnValue(invoiceRowEntity);
 
-      await invoiceRepository.store(invoice);
+      await invoiceService.store(invoice);
 
       expect(invoiceRowOrmRepository.create).toBeCalledWith(invoiceRowEntity);
       expect(invoiceRowOrmRepository.save).toHaveBeenCalledWith(
@@ -132,8 +166,14 @@ describe('InvoiceRepository', () => {
   });
 
   describe('update', () => {
+    it('throws exception if invoice is not booked', async () => {
+      await expect(
+        invoiceService.store(new Invoice(invoiceEntity, invoiceEntity.rows)),
+      ).rejects.toThrow(BadRequestException);
+    });
+
     it('uses invoice orm repository to save invoice partial', async () => {
-      await invoiceRepository.update(invoice);
+      await invoiceService.update(invoice);
 
       expect(invoiceOrmRepository.save).toHaveBeenCalledWith(invoiceEntity);
     });
@@ -141,7 +181,7 @@ describe('InvoiceRepository', () => {
     it('deletes old invoice rows', async () => {
       jest.spyOn(invoiceOrmRepository, 'save').mockResolvedValue(invoiceEntity);
 
-      await invoiceRepository.update(invoice);
+      await invoiceService.update(invoice);
 
       expect(invoiceRowOrmRepository.delete).toHaveBeenCalledWith({
         invoice: invoiceEntity,
@@ -155,7 +195,7 @@ describe('InvoiceRepository', () => {
         .spyOn(invoiceRowOrmRepository, 'create')
         .mockReturnValue(invoiceRowEntity);
 
-      await invoiceRepository.update(invoice);
+      await invoiceService.update(invoice);
 
       expect(invoiceRowOrmRepository.create).toBeCalledWith(invoiceRowEntity);
       expect(invoiceRowOrmRepository.save).toHaveBeenCalledWith(
@@ -166,7 +206,7 @@ describe('InvoiceRepository', () => {
 
   describe('delete', () => {
     it('uses invoice orm repository to delete given invoice entity', async () => {
-      await invoiceRepository.delete(invoice);
+      await invoiceService.delete(invoice);
 
       expect(invoiceOrmRepository.delete).toHaveBeenCalledWith({
         id: invoiceEntity.id,
