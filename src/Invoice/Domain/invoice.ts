@@ -7,8 +7,8 @@ export class Invoice extends AggregateRoot {
   private booked = false;
 
   constructor(
-    public readonly data: Partial<InvoiceEntity> | InvoiceEntity,
-    public readonly rows: Array<Partial<InvoiceRowEntity>>,
+    public data: Partial<InvoiceEntity> | InvoiceEntity,
+    public rows: Array<Partial<InvoiceRowEntity>>,
   ) {
     super();
   }

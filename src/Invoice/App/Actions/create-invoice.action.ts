@@ -13,11 +13,15 @@ export class CreateInvoiceAction {
 
   public async execute(dto: CreateInvoiceDTO): Promise<void> {
     const { rows, ...data } = dto;
+
     const invoice = this.factory.create(data, rows);
+
     const invoiceAmountThisYear = await this.invoices.getInvoiceAmountThisYear();
 
     invoice.generateNumber(invoiceAmountThisYear);
+
     invoice.calculateTotal();
+
     await invoice.book(policyCollection);
 
     await this.invoices.store(invoice);

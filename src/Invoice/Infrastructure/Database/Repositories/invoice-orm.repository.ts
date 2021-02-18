@@ -37,9 +37,10 @@ export class InvoiceOrmRepository extends Repository<InvoiceEntity> {
   public async paginate(
     options: IPaginationOptions,
   ): Promise<Pagination<InvoiceEntity>> {
-    const query = this.createQueryBuilder('invoices')
-      .orderBy('invoices.createdAt', 'DESC')
-      .leftJoinAndSelect('invoices.rows', 'invoiceRows');
+    const query = this.createQueryBuilder('invoices').orderBy(
+      'invoices.createdAt',
+      'DESC',
+    );
 
     return paginate<InvoiceEntity>(query, options);
   }

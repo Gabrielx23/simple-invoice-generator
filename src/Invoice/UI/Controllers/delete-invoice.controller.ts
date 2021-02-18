@@ -6,35 +6,35 @@ import {
 } from '@nestjs/swagger';
 import {
   Controller,
-  Get,
+  Delete,
   NotFoundException,
   Param,
   ParseUUIDPipe,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
-import { InvoiceDTO } from '../../App/DTO/invoice.dto';
+import { DeleteInvoiceAction } from '../../App/Actions/delete-invoice.action';
 import { GetInvoiceQuery } from '../../App/Queries/get-invoice.query';
 
 @ApiTags('Invoice')
 @Controller('invoices')
-export class GetInvoiceController {
-  constructor(private readonly getInvoiceQuery: GetInvoiceQuery) {}
+export class DeleteInvoiceController {
+  constructor(
+    private readonly deleteInvoiceAction: DeleteInvoiceAction,
+    private readonly getInvoiceQuery: GetInvoiceQuery,
+  ) {}
 
-  @Get(':id')
-  @UsePipes(ValidationPipe)
-  @ApiOkResponse({ type: InvoiceDTO })
+  @Delete(':id')
+  @ApiOkResponse()
   @ApiNotFoundResponse()
   @ApiBadRequestResponse()
-  public async get(
+  public async delete(
     @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<InvoiceDTO | null> {
+  ): Promise<void> {
     const invoice = await this.getInvoiceQuery.execute(id);
 
     if (!invoice) {
       throw new NotFoundException('Invoice not exist!');
     }
 
-    return invoice as InvoiceDTO;
+    await this.deleteInvoiceAction.execute(invoice.data.id);
   }
 }

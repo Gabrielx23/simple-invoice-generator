@@ -6,6 +6,7 @@ import { InvoiceRowOrmRepository } from '../Infrastructure/Database/Repositories
 import { InvoiceFactory } from './invoice.factory';
 import { InvoiceRowEntity } from './Entities/invoice-row.entity';
 import { InvoiceEntity } from './Entities/invoice.entity';
+import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class InvoiceService {
@@ -38,8 +39,14 @@ export class InvoiceService {
     return this.invoiceFactory.create(invoiceEntity, invoiceEntity.rows);
   }
 
-  public async delete(invoice: Invoice): Promise<void> {
-    await this.invoiceOrmRepository.delete({ id: invoice.data.id });
+  public async paginate(
+    options: IPaginationOptions,
+  ): Promise<Pagination<InvoiceEntity>> {
+    return await this.invoiceOrmRepository.paginate(options);
+  }
+
+  public async delete(id: string): Promise<void> {
+    await this.invoiceOrmRepository.delete({ id });
   }
 
   public async update(invoice: Invoice): Promise<void> {

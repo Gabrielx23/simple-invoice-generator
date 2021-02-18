@@ -7,12 +7,14 @@ import { InvoiceEntity } from './Entities/invoice.entity';
 import { InvoiceRowEntity } from './Entities/invoice-row.entity';
 import { Invoice } from './invoice';
 import { BadRequestException } from '@nestjs/common';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 const invoiceOrmRepositoryMock = () => ({
   getById: jest.fn(),
   create: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
+  paginate: jest.fn(),
   getInvoicesCountInTimeRange: jest.fn(),
 });
 
@@ -205,12 +207,41 @@ describe('InvoiceService', () => {
   });
 
   describe('delete', () => {
-    it('uses invoice orm repository to delete given invoice entity', async () => {
-      await invoiceService.delete(invoice);
+    it('uses invoice orm repository to delete invoice by id', async () => {
+      await invoiceService.delete('id');
 
       expect(invoiceOrmRepository.delete).toHaveBeenCalledWith({
-        id: invoiceEntity.id,
+        id: 'id',
       });
+    });
+  });
+
+  describe('paginate', () => {
+    const pagination = new Pagination(
+      [new InvoiceEntity()],
+      {
+        currentPage: 0,
+        itemCount: 0,
+        itemsPerPage: 0,
+        totalItems: 0,
+        totalPages: 0,
+      },
+      {},
+    );
+
+    it('uses invoice orm repository to get paginated invoices', async () => {
+      jest
+        .spyOn(invoiceOrmRepository, 'paginate')
+        .mockResolvedValue(pagination);
+
+      const result = await invoiceService.paginate({ page: 1, limit: 10 });
+
+      expect(invoiceOrmRepository.paginate).toHaveBeenCalledWith({
+        page: 1,
+        limit: 10,
+      });
+
+      expect(result).toEqual(pagination);
     });
   });
 });

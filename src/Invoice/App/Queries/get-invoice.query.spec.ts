@@ -48,6 +48,14 @@ describe('GetInvoiceQuery', () => {
       expect(result).toBeNull();
     });
 
+    it('returns not parsed invoice if parse flag is set to false', async () => {
+      jest.spyOn(invoiceService, 'get').mockResolvedValue(invoice);
+
+      const result = await query.execute('id', false);
+
+      expect(result).toEqual(invoice);
+    });
+
     it('returns invoice dto if invoice by id exist', async () => {
       jest.spyOn(invoiceService, 'get').mockResolvedValue(invoice);
 
