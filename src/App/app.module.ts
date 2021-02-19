@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfig } from './Config/database.config';
 import { InvoiceModule } from '../Invoice/invoice.module';
 import { ContractorModule } from '../Contractor/contractor.module';
+import { CompanyModule } from '../Company/contractor.module';
 
 @Module({
   imports: [
     InvoiceModule,
     ContractorModule,
+    CompanyModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [mainConfig],

@@ -14,6 +14,7 @@ import {
 import { CreateInvoiceDTO } from '../DTO/create-invoice.dto';
 import { CreateInvoiceAction } from '../../App/Actions/create-invoice.action';
 import { ContractorGateway } from '../../../Contractor/Providers/contractor.gateway';
+import { CompanyGateway } from '../../../Company/Providers/company.gateway';
 
 @ApiTags('Invoice')
 @Controller('invoices')
@@ -21,6 +22,7 @@ export class CreateInvoiceController {
   constructor(
     private readonly createAction: CreateInvoiceAction,
     private readonly contractorGateway: ContractorGateway,
+    private readonly companyGateway: CompanyGateway,
   ) {}
 
   @Post()
@@ -36,7 +38,14 @@ export class CreateInvoiceController {
       throw new NotFoundException('Contractor not exist!');
     }
 
+    const company = await this.companyGateway.getCompanyById(dto.companyId);
+
+    if (!company) {
+      throw new NotFoundException('Company not exist!');
+    }
+
     dto.contractor = contractor;
+    dto.company = company;
 
     await this.createAction.execute(dto);
   }

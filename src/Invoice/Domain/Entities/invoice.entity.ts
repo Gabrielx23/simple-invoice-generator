@@ -13,7 +13,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PaymentTypeEnum } from '../Enum/payment-type.enum';
 import { InvoiceRowEntity } from './invoice-row.entity';
 import { ContractorEntity } from '../../../Contractor/Database/Entities/contractor.entity';
-import { Type } from 'class-transformer';
+import { CompanyEntity } from '../../../Company/Database/Entities/company.entity';
 
 @Entity('invoices')
 @Unique(['number'])
@@ -65,6 +65,10 @@ export class InvoiceEntity extends BaseEntity {
   @ApiProperty({ example: new ContractorEntity() })
   @ManyToOne('ContractorEntity', 'invoices')
   contractor: ContractorEntity;
+
+  @ApiProperty({ example: new CompanyEntity() })
+  @ManyToOne('CompanyEntity', 'invoices')
+  company: CompanyEntity;
 
   @ApiProperty({ example: '2020-08-10T05:59:36.708Z' })
   @CreateDateColumn({ type: 'timestamp' })

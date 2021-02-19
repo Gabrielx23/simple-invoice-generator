@@ -20,6 +20,7 @@ import { UpdateInvoiceAction } from '../../App/Actions/update-invoice.action';
 import { Invoice } from '../../Domain/invoice';
 import { InvoiceDTO } from '../../App/DTO/invoice.dto';
 import { ContractorGateway } from '../../../Contractor/Providers/contractor.gateway';
+import { CompanyGateway } from '../../../Company/Providers/company.gateway';
 
 @ApiTags('Invoice')
 @Controller('invoices')
@@ -28,6 +29,7 @@ export class UpdateInvoiceController {
     private readonly updateInvoiceAction: UpdateInvoiceAction,
     private readonly getInvoiceQuery: GetInvoiceQuery,
     private readonly contractorGateway: ContractorGateway,
+    private readonly companyGateway: CompanyGateway,
   ) {}
 
   @Put(':id')
@@ -53,7 +55,14 @@ export class UpdateInvoiceController {
       throw new NotFoundException('Contractor not exist!');
     }
 
+    const company = await this.companyGateway.getCompanyById(dto.companyId);
+
+    if (!company) {
+      throw new NotFoundException('Company not exist!');
+    }
+
     dto.contractor = contractor;
+    dto.company = company;
 
     await this.updateInvoiceAction.execute(invoice as Invoice, dto);
 

@@ -8,11 +8,13 @@ import { actions } from './App/Actions';
 import { controllers } from './UI/Controllers';
 import { queries } from './App/Queries';
 import { ContractorModule } from '../Contractor/contractor.module';
+import { CompanyModule } from '../Company/contractor.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([InvoiceOrmRepository, InvoiceRowOrmRepository]),
     ContractorModule,
+    CompanyModule,
   ],
   providers: [...actions, ...queries, InvoiceService, InvoiceFactory],
   exports: [],
