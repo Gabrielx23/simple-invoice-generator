@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsDateString,
   IsEnum,
+  IsUUID,
   MaxLength,
   MinLength,
   ValidateNested,
@@ -12,8 +13,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { InvoiceRowDTO } from './invoice-row.dto';
 import { PaymentTypeEnum } from '../../Domain/Enum/payment-type.enum';
+import { ContractorEntity } from '../../../Contractor/Database/Entities/contractor.entity';
 
 export class CreateInvoiceDTO {
+  @ApiProperty({ example: '91e56daf-04ef-4bbc-abe7-5d3a8ee41101' })
+  @IsUUID()
+  contractorId: string;
+
+  contractor: ContractorEntity;
+
   @ApiProperty({ example: '2021-08-10' })
   @IsDateString()
   invoiceDate: Date;

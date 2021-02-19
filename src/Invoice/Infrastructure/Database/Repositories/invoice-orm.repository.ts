@@ -24,6 +24,7 @@ export class InvoiceOrmRepository extends Repository<InvoiceEntity> {
     return this.createQueryBuilder('invoices')
       .where('invoices.id = :id', { id })
       .leftJoinAndSelect('invoices.rows', 'invoiceRows')
+      .leftJoinAndSelect('invoices.contractor', 'contractor')
       .getOne();
   }
 

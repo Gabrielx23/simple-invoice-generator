@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InvoiceOrmRepository } from './Infrastructure/Database/Repositories/invoice-orm.repository';
 import { InvoiceRowOrmRepository } from './Infrastructure/Database/Repositories/invoice-row-orm.repository';
@@ -8,11 +7,12 @@ import { InvoiceFactory } from './Domain/invoice.factory';
 import { actions } from './App/Actions';
 import { controllers } from './UI/Controllers';
 import { queries } from './App/Queries';
+import { ContractorModule } from '../Contractor/contractor.module';
 
 @Module({
   imports: [
-    CqrsModule,
     TypeOrmModule.forFeature([InvoiceOrmRepository, InvoiceRowOrmRepository]),
+    ContractorModule,
   ],
   providers: [...actions, ...queries, InvoiceService, InvoiceFactory],
   exports: [],

@@ -6,25 +6,25 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Controller, Get, Query } from '@nestjs/common';
-import { InvoiceEntity } from '../../Domain/Entities/invoice.entity';
-import { PaginateInvoicesQuery } from '../../App/Queries/paginate-invoices.query';
+import { ContractorService } from '../Providers/contractor.service';
+import { ContractorEntity } from '../Database/Entities/contractor.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 
-@ApiTags('Invoice')
-@Controller('invoices')
-export class PaginateInvoicesController {
-  constructor(private readonly paginateInvoiceQuery: PaginateInvoicesQuery) {}
+@ApiTags('Contractor')
+@Controller('contractors')
+export class PaginateContractorsController {
+  constructor(private readonly contractorService: ContractorService) {}
 
   @Get()
-  @ApiOkResponse({ type: [InvoiceEntity] })
+  @ApiOkResponse({ type: [ContractorEntity] })
   @ApiQuery({ name: 'page', required: false, allowEmptyValue: true })
   @ApiQuery({ name: 'limit', required: false, allowEmptyValue: true })
-  @ApiNotFoundResponse()
   @ApiBadRequestResponse()
+  @ApiNotFoundResponse()
   public async paginate(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
-  ): Promise<Pagination<InvoiceEntity>> {
-    return await this.paginateInvoiceQuery.execute({ page, limit });
+  ): Promise<Pagination<ContractorEntity>> {
+    return await this.contractorService.paginate({ page, limit });
   }
 }

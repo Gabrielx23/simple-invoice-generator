@@ -2,6 +2,7 @@ import { join } from 'path';
 import { ConnectionOptions } from 'typeorm';
 import { InvoiceEntity } from '../../Invoice/Domain/Entities/invoice.entity';
 import { InvoiceRowEntity } from '../../Invoice/Domain/Entities/invoice-row.entity';
+import { ContractorEntity } from '../../Contractor/Database/Entities/contractor.entity';
 
 export const connectionOptions: ConnectionOptions = {
   type: 'mysql',
@@ -12,9 +13,10 @@ export const connectionOptions: ConnectionOptions = {
   database: process.env.DB_DATABASE,
   migrationsRun: true,
   synchronize: false,
-  logging: false,
-  entities: [InvoiceEntity, InvoiceRowEntity],
+  logging: ['error', 'query', 'schema'],
+  entities: [InvoiceEntity, InvoiceRowEntity, ContractorEntity],
   migrations: [
+    join(__dirname, '../../Contractor/Database/Migrations/*{.ts,.js}'),
     join(
       __dirname,
       '../../Invoice/Infrastructure/Database/Migrations/*{.ts,.js}',
