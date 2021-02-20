@@ -1,0 +1,344 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        h1 {
+            font: bold 100% sans-serif;
+            letter-spacing: 0.5em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        table {
+            font-size: 75%;
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 2px;
+        }
+
+        th, td {
+            border-width: 1px;
+            padding: 0.5em;
+            position: relative;
+            text-align: left;
+        }
+
+        th, td {
+            border-radius: 0.25em;
+            border-style: solid;
+        }
+
+        th {
+            background: #EEE;
+            border-color: #BBB;
+        }
+
+        td {
+            border-color: #DDD;
+        }
+
+        html {
+            font: 16px/1 'Open Sans', sans-serif;
+            overflow: auto;
+            padding: 0.5in;
+        }
+
+        html {
+            background: #999;
+            cursor: default;
+        }
+
+        body {
+            box-sizing: border-box;
+            height: 11in;
+            margin: 0 auto;
+            overflow: hidden;
+            padding: 0.5in;
+            width: 8.5in;
+        }
+
+        body {
+            background: #FFF;
+            border-radius: 1px;
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+        }
+
+        header {
+            margin: 0 0 3em;
+        }
+
+        header h1 {
+            border-radius: 0.25em;
+            margin: 0 0 1em;
+            padding: 0.5em 0;
+        }
+
+        .invoiceHeader {
+            margin-bottom: 70px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .invoiceHeader .data {
+            width: 50%;
+            font-size: 75%;
+            font-style: normal;
+            line-height: 1.25;
+        }
+
+        .invoiceHeader .data p {
+            margin: 0 0 0.25em;
+        }
+
+        .invoiceHeader .info {
+            width: 50%;
+            font-style: normal;
+            line-height: 1.25;
+        }
+
+        .logoCont {
+            margin-top: -100px;
+            margin-bottom: -50px;
+        }
+
+        article, article address, table.meta, table.inventory {
+            margin: -50px 0 3em;
+        }
+
+        article:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        article address {
+            float: left;
+            font-size: 125%;
+            font-weight: bold;
+        }
+
+        table.metaTop th {
+            width: 40%;
+        }
+
+        table.metaTop td {
+            width: 60%;
+        }
+
+        table.balance {
+            margin-top: 20px;
+            width: 40%;
+            margin-right: auto;
+        }
+
+        table.meta th {
+            width: 40%;
+        }
+
+        table.meta td {
+            width: 60%;
+        }
+
+        table.vatSummary {
+            margin-top: 10px;
+            text-align: center;
+            width: 40%;
+            margin-left: auto;
+        }
+
+        table.vatSummary td, th {
+            text-align: center;
+        }
+
+        table.inventory {
+            clear: both;
+            width: 100%;
+        }
+
+        table.inventory th {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        table.inventory td {
+            text-align: center;
+        }
+
+        table.balance th, table.balance td {
+            width: 50%;
+        }
+
+        table.balance td {
+            text-align: right;
+        }
+
+        .clearInventoryTd {
+            border: none;
+            background: none;
+        }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact;
+            }
+
+            html {
+                background: none;
+                padding: 0;
+            }
+
+            body {
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>
+        <%= lang === 'pl' ? 'Faktura nr ' : 'Invoice' %>
+        <%= invoice.data.number %>
+    </h1>
+    <p style="text-align: center;">
+        <%= lang === 'pl' ? 'ORYGINAŁ | KOPIA' : 'ORIGINAL | COPY' %>
+    </p>
+    <div class="invoiceHeader">
+        <div class="data">
+            <h2><%= lang === 'pl' ? 'Sprzedawca:' : 'Seller:' %></h2>
+            <p><%= invoice.data.company.name %></p>
+            <p><%= lang === 'pl' ? 'NIP: ' : 'Vat id: ' %><%= invoice.data.company.vatId %></p>
+            <p><%= invoice.data.company.address %></p>
+            <p><%= lang === 'pl' ? 'Konto bankowe: ' : 'Bank account: ' %> <%= invoice.data.company.accountNumber %> <%= invoice.data.company.accountProvider %></p>
+
+            <br>
+            <h2><%= lang === 'pl' ? 'Nabywca:' : 'Contractor:' %></h2>
+            <p><%= invoice.data.contractor.name %></p>
+            <p><%= lang === 'pl' ? 'NIP:' : 'Vat id:' %><%= invoice.data.contractor.vatId %></p>
+            <p><%= invoice.data.contractor.address %></p>
+        </div>
+        <div class="info">
+            <div class="logo"><%- invoice.data.company.logo ? '<div class="logoCont">' + invoice.data.company.logo + '</div>' : '' %></div>
+
+            <table class="metaTop">
+                <tr>
+                    <th><span contenteditable><%= lang === 'pl' ? 'Miejsce' : 'Place' %></span></th>
+                    <td><span contenteditable><%= invoice.data.place %></span></td>
+                </tr>
+                <tr>
+                    <th><span contenteditable><%= lang === 'pl' ? 'Data faktury' : 'Date' %></span></th>
+                    <td><span contenteditable><%= invoice.data.invoiceDate %></span></td>
+                </tr>
+                <tr>
+                    <th><span contenteditable><%= lang === 'pl' ? 'Data usługi/dostawy' : 'Delivery date' %></span></th>
+                    <td><span contenteditable><%= invoice.data.deliveryDate %></span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</header>
+
+<%- !invoice.data.withVat ? (lang === 'pl'
+        ? '<div style="margin-bottom: 60px; text-align:center;">Podmiot zwolniony z VAT na podstawie art. 43 ust. 1 pkt 28 ustawy o podatku od towarów i usług.</div>'
+        : '<div style="margin-bottom: 60px; text-align:center;"></div>') : 'Invoice without VAT tax.' %>
+
+<article>
+    <table class="inventory">
+        <thead>
+        <tr>
+            <th width="35%"><span contenteditable><%= lang === 'pl' ? 'Towar/usługa' : 'Item' %></span></th>
+            <th width="7%"><span contenteditable><%= lang === 'pl' ? 'Ilość' : 'Amount' %></span></th>
+            <th width="15%"><span contenteditable><%= lang === 'pl' ? 'Cena netto' : 'Price' %></span></th>
+            <th width="15%"><span contenteditable><%= lang === 'pl' ? 'Wartość netto' : 'Total price' %></span></th>
+            <th width="7%"><span contenteditable><%= lang === 'pl' ? 'VAT' : 'VAT' %></span></th>
+            <th width="10%"><span contenteditable><%= lang === 'pl' ? 'Kwota VAT' : 'VAT Total' %></span></th>
+            <th width="15%"><span contenteditable><%= lang === 'pl' ? 'Wartość brutto' : 'Total gross' %></span></th>
+        </tr>
+        </thead>
+        <tbody>
+        <% invoice.rows.forEach(function(row, index){ %>
+            <tr>
+                <td><span><%= index + 1 %>. <%= row.title %></span></td>
+                <td><span><%= row.amount %><%= lang === 'pl' && row.unit === 'pc(s)' ? 'szt.' : row.unit %></span></td>
+                <td><span><%= row.price %> zł</span></td>
+                <td><span><%= (row.price * row.amount).toFixed(2) %> zł</span></td>
+                <td><span><%= row.vat ? row.vat + '%' : '0%' %></span></td>
+                <td><span><%= (row.vat ? (row.price * (row.vat / 100) * row.amount).toFixed(2) + ' zł' : '0 zł') %></span></td>
+                <td>
+                    <span><%= row.vat ? ((row.price * row.amount) * (1 + row.vat / 100)).toFixed(2) : (row.price * row.amount).toFixed(2) %> zł</span>
+                </td>
+            </tr>
+        <% }); %>
+        <tr>
+            <td class="clearInventoryTd"></td>
+            <td class="clearInventoryTd"></td>
+            <td class="clearInventoryTd"></td>
+            <td><span><%= invoice.totalWithoutVat %> zł</span></td>
+            <td class="clearInventoryTd"></td>
+            <td><span><%= invoice.totalVat %> zł</span></td>
+            <td><span><%= invoice.total %> zł</span></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="text-align: right; margin-top: -20px;">
+        <small><%= lang === 'pl' ? 'Zestawienie sprzedaży wg. stawek VAT' : 'Total grouped by VAT' %></small>
+    </div>
+
+
+    <table class="vatSummary">
+        <thead>
+        <tr>
+            <th width="30%"><span contenteditable><%= lang === 'pl' ? 'Wartość netto' : 'Price' %></span></th>
+            <th width="20%"><span contenteditable><%= lang === 'pl' ? 'Stawka VAT' : 'VAT' %></span></th>
+            <th width="20%"><span contenteditable><%= lang === 'pl' ? 'Kwota VAT' : 'VAT Total' %></span></th>
+            <th width="30%"><span contenteditable><%= lang === 'pl' ? 'Wartość brutto' : 'Total gross' %></span></th>
+        </tr>
+        </thead>
+        <tbody>
+        <% invoice.rows.reduce((grouped, row) => {
+            const vat = row.vat ? row.vat : 'Z';
+            grouped[vat] = grouped[vat] || [];
+            grouped[vat].push(row);
+            return grouped;
+        }, []).forEach(function(groupedRows){ %>
+            <tr>
+                <% let total = groupedRows.reduce((total, curr) => total + (parseFloat(curr.price) * curr.amount), 0)  %>
+                <td><%= total.toFixed(2)  %> zł</td>
+                <td><%= groupedRows[0].vat ? groupedRows[0].vat + '%' : '0 %' %></td>
+                <td><%= groupedRows[0].vat ? (total * (groupedRows[0].vat / 100)).toFixed(2) : '-'  %> zł</td>
+                <td><%= groupedRows[0].vat ? (total * (1 + groupedRows[0].vat / 100)).toFixed(2) : total  %> zł</td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+
+    <table class="balance">
+        <tr>
+            <th style="text-align:right"><span><%= lang === 'pl' ? 'Razem do zapłaty' : 'Total gross' %></span></th>
+            <td style="text-align:left"><span><%= invoice.total %> zł</span></td>
+        </tr>
+
+        <tr>
+            <th style="text-align:right"><span><%= lang === 'pl' ? 'Forma płatności' : 'Payment type' %></span></th>
+            <td style="text-align:left">
+                <span><%= lang === 'pl' && invoice.data.paymentType === 'bankTransfer' ? 'przelew' : '' %></span>
+                <span><%= lang === 'pl' && invoice.data.paymentType === 'cash' ? 'gotówka' : '' %></span>
+                <span><%= lang !== 'pl' && invoice.data.paymentType === 'bankTransfer' ? 'bank transfer' : '' %></span>
+                <span><%= lang !== 'pl' && invoice.data.paymentType === 'cash' ? 'cash' : '' %></span>
+            </td>
+        </tr>
+
+        <tr>
+            <th style="text-align:right"><span><%= lang === 'pl' ? 'Termin płatności' : 'Payment date' %></span></th>
+            <td style="text-align:left"><span><%= invoice.data.paymentDate %></span></td>
+        </tr>
+    </table>
+</article>
+</body>
+</html>
