@@ -131,8 +131,6 @@
         }
 
         table.balance {
-            margin-top: 20px;
-            width: 40%;
             margin-right: auto;
         }
 
@@ -147,7 +145,6 @@
         table.vatSummary {
             margin-top: 10px;
             text-align: center;
-            width: 40%;
             margin-left: auto;
         }
 
@@ -182,6 +179,14 @@
             background: none;
         }
 
+        .container {
+            display: flex;
+        }
+
+        .item {
+            width: 50%;
+        }
+
         @media print {
             * {
                 -webkit-print-color-adjust: exact;
@@ -206,7 +211,10 @@
         <%= invoice.data.number %>
     </h1>
     <p style="text-align: center;">
-        <%= lang === 'pl' ? 'ORYGINAŁ | KOPIA' : 'ORIGINAL | COPY' %>
+        <%- lang === 'pl' && copy ? '<s>ORYGINAŁ</s> | KOPIA' : '' %>
+        <%- lang === 'pl' && !copy ? 'ORYGINAŁ | <s>KOPIA</s>' : '' %>
+        <%- lang !== 'pl' && copy ? '<s>ORYGINAL</s> | COPY' : '' %>
+        <%- lang !== 'pl' && !copy ? 'ORYGINAL | <s>COPY</s>' : '' %>
     </p>
     <div class="invoiceHeader">
         <div class="data">
@@ -245,7 +253,7 @@
 
 <%- !invoice.data.withVat ? (lang === 'pl'
         ? '<div style="margin-bottom: 60px; text-align:center;">Podmiot zwolniony z VAT na podstawie art. 43 ust. 1 pkt 28 ustawy o podatku od towarów i usług.</div>'
-        : '<div style="margin-bottom: 60px; text-align:center;"></div>') : 'Invoice without VAT tax.' %>
+        : '<div style="margin-bottom: 60px; text-align:center;">Invoice without VAT tax.</div>') : '' %>
 
 <article>
     <table class="inventory">
@@ -286,59 +294,74 @@
         </tbody>
     </table>
 
-    <div style="text-align: right; margin-top: -20px;">
-        <small><%= lang === 'pl' ? 'Zestawienie sprzedaży wg. stawek VAT' : 'Total grouped by VAT' %></small>
+    <div class="container" style="margin-top: 0px;">
+        <div class="item" style="padding: 0px 50px;">
+            <table class="balance">
+                <tr>
+                    <th style="text-align:right"><span><%= lang === 'pl' ? 'Razem do zapłaty' : 'Total gross' %></span></th>
+                    <td style="text-align:left"><span><%= invoice.total %> zł</span></td>
+                </tr>
+
+                <tr>
+                    <th style="text-align:right"><span><%= lang === 'pl' ? 'Forma płatności' : 'Payment type' %></span></th>
+                    <td style="text-align:left">
+                        <span><%= lang === 'pl' && invoice.data.paymentType === 'bankTransfer' ? 'przelew' : '' %></span>
+                        <span><%= lang === 'pl' && invoice.data.paymentType === 'cash' ? 'gotówka' : '' %></span>
+                        <span><%= lang !== 'pl' && invoice.data.paymentType === 'bankTransfer' ? 'bank transfer' : '' %></span>
+                        <span><%= lang !== 'pl' && invoice.data.paymentType === 'cash' ? 'cash' : '' %></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th style="text-align:right"><span><%= lang === 'pl' ? 'Termin płatności' : 'Payment date' %></span></th>
+                    <td style="text-align:left"><span><%= invoice.data.paymentDate %></span></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="item">
+            <div style="text-align: right; margin-top: -20px;">
+                <small><%= lang === 'pl' ? 'Zestawienie sprzedaży wg. stawek VAT' : 'Total grouped by VAT' %></small>
+            </div>
+            <table class="vatSummary">
+                <thead>
+                <tr>
+                    <th width="30%"><span contenteditable><%= lang === 'pl' ? 'Wartość netto' : 'Price' %></span></th>
+                    <th width="20%"><span contenteditable><%= lang === 'pl' ? 'Stawka VAT' : 'VAT' %></span></th>
+                    <th width="20%"><span contenteditable><%= lang === 'pl' ? 'Kwota VAT' : 'VAT Total' %></span></th>
+                    <th width="30%"><span contenteditable><%= lang === 'pl' ? 'Wartość brutto' : 'Total gross' %></span></th>
+                </tr>
+                </thead>
+                <tbody>
+                <% invoice.rows.reduce((grouped, row) => {
+                    const vat = row.vat ? row.vat : 0;
+                    grouped[vat] = grouped[vat] || [];
+                    grouped[vat].push(row);
+                    return grouped;
+                }, []).forEach(function(groupedRows){ %>
+                    <tr>
+                        <% let total = groupedRows.reduce((total, curr) => parseFloat(total) + parseFloat((parseFloat(curr.price) * curr.amount).toFixed(2)), 0.00)  %>
+                        <td><%= total %> zł</td>
+                        <td><%= !!groupedRows[0].vat ? groupedRows[0].vat + '%' : '0%' %></td>
+                        <td><%= !!groupedRows[0].vat ? groupedRows.reduce((total, curr) => parseFloat(total.toFixed(2)) + parseFloat((curr.price * curr.amount * (curr.vat / 100)).toFixed(2)), 0) : '0'  %> zł</td>
+                        <td><%= !!groupedRows[0].vat ? groupedRows.reduce((total, curr) => parseFloat(total.toFixed(2)) + parseFloat((curr.price * curr.amount * (1 + curr.vat / 100)).toFixed(2)), 0) : total  %> zł</td>
+                    </tr>
+                <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</article>
+<div class="container" style="text-align: center; margin-top: 150px;">
+    <div class="item" style="padding: 0px 15px;">
+        <hr>
+        <small><%= lang === 'pl' ? 'Podpis osoby upoważnionej do wystawienia' : 'Seller sign' %></small>
     </div>
 
-
-    <table class="vatSummary">
-        <thead>
-        <tr>
-            <th width="30%"><span contenteditable><%= lang === 'pl' ? 'Wartość netto' : 'Price' %></span></th>
-            <th width="20%"><span contenteditable><%= lang === 'pl' ? 'Stawka VAT' : 'VAT' %></span></th>
-            <th width="20%"><span contenteditable><%= lang === 'pl' ? 'Kwota VAT' : 'VAT Total' %></span></th>
-            <th width="30%"><span contenteditable><%= lang === 'pl' ? 'Wartość brutto' : 'Total gross' %></span></th>
-        </tr>
-        </thead>
-        <tbody>
-        <% invoice.rows.reduce((grouped, row) => {
-            const vat = row.vat ? row.vat : 'Z';
-            grouped[vat] = grouped[vat] || [];
-            grouped[vat].push(row);
-            return grouped;
-        }, []).forEach(function(groupedRows){ %>
-            <tr>
-                <% let total = groupedRows.reduce((total, curr) => total + (parseFloat(curr.price) * curr.amount), 0)  %>
-                <td><%= total.toFixed(2)  %> zł</td>
-                <td><%= groupedRows[0].vat ? groupedRows[0].vat + '%' : '0 %' %></td>
-                <td><%= groupedRows[0].vat ? (total * (groupedRows[0].vat / 100)).toFixed(2) : '-'  %> zł</td>
-                <td><%= groupedRows[0].vat ? (total * (1 + groupedRows[0].vat / 100)).toFixed(2) : total  %> zł</td>
-            </tr>
-        <% }); %>
-        </tbody>
-    </table>
-
-    <table class="balance">
-        <tr>
-            <th style="text-align:right"><span><%= lang === 'pl' ? 'Razem do zapłaty' : 'Total gross' %></span></th>
-            <td style="text-align:left"><span><%= invoice.total %> zł</span></td>
-        </tr>
-
-        <tr>
-            <th style="text-align:right"><span><%= lang === 'pl' ? 'Forma płatności' : 'Payment type' %></span></th>
-            <td style="text-align:left">
-                <span><%= lang === 'pl' && invoice.data.paymentType === 'bankTransfer' ? 'przelew' : '' %></span>
-                <span><%= lang === 'pl' && invoice.data.paymentType === 'cash' ? 'gotówka' : '' %></span>
-                <span><%= lang !== 'pl' && invoice.data.paymentType === 'bankTransfer' ? 'bank transfer' : '' %></span>
-                <span><%= lang !== 'pl' && invoice.data.paymentType === 'cash' ? 'cash' : '' %></span>
-            </td>
-        </tr>
-
-        <tr>
-            <th style="text-align:right"><span><%= lang === 'pl' ? 'Termin płatności' : 'Payment date' %></span></th>
-            <td style="text-align:left"><span><%= invoice.data.paymentDate %></span></td>
-        </tr>
-    </table>
-</article>
+    <div class="item" style="padding: 0px 15px;">
+        <hr>
+        <small><%= lang === 'pl' ? 'Podpis osoby upoważnionej do odbioru' : 'Contractor sign' %></small>
+    </div>
+</div>
 </body>
 </html>

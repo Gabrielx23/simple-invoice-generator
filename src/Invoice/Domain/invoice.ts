@@ -42,7 +42,9 @@ export class Invoice extends AggregateRoot {
 
     for (const row of this.rows) {
       const price = parseFloat(row.price);
-      total += row.vat ? price * (1 + row.vat / 100) * row.amount : price;
+      total += parseFloat(
+        (row.vat ? price * (1 + row.vat / 100) * row.amount : price).toFixed(2),
+      );
     }
 
     this.data.total = total.toFixed(2);
@@ -52,7 +54,7 @@ export class Invoice extends AggregateRoot {
     let total = 0;
 
     for (const row of this.rows) {
-      total += parseFloat(row.price) * row.amount;
+      total += parseFloat((parseFloat(row.price) * row.amount).toFixed(2));
     }
 
     return total.toFixed(2);
@@ -63,7 +65,9 @@ export class Invoice extends AggregateRoot {
 
     for (const row of this.rows) {
       const price = parseFloat(row.price);
-      total += row.vat ? price * (row.vat / 100) * row.amount : 0;
+      total += parseFloat(
+        (row.vat ? price * (row.vat / 100) * row.amount : 0).toFixed(2),
+      );
     }
 
     return total.toFixed(2);

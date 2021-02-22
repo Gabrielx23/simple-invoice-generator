@@ -26,12 +26,14 @@ export class RenderInvoiceController {
   @Get(':id/render')
   @UsePipes(ValidationPipe)
   @ApiQuery({ name: 'lang', required: false, allowEmptyValue: true })
+  @ApiQuery({ name: 'copy', required: false, allowEmptyValue: true })
   @ApiOkResponse()
   @ApiNotFoundResponse()
   @ApiBadRequestResponse()
   @Render('invoices/invoice')
   public async get(
     @Query('lang') lang: string,
+    @Query('copy') copy = false,
     @Param('id', new ParseUUIDPipe()) id: string,
   ) {
     const invoice = await this.getInvoiceQuery.execute(id);
@@ -40,6 +42,6 @@ export class RenderInvoiceController {
       throw new NotFoundException('Invoice not exist!');
     }
 
-    return { invoice, lang };
+    return { invoice, lang, copy };
   }
 }
