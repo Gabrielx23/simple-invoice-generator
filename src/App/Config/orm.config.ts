@@ -14,6 +14,9 @@ export const connectionOptions: ConnectionOptions = {
   database: process.env.DB_DATABASE,
   migrationsRun: true,
   synchronize: false,
+  extra: {
+    charset: 'utf8mb4_unicode_ci',
+  },
   logging: ['error', 'query', 'schema'],
   entities: [InvoiceEntity, InvoiceRowEntity, ContractorEntity, CompanyEntity],
   migrations: [

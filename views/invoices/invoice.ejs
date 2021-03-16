@@ -102,8 +102,11 @@
         }
 
         .logoCont {
-            margin-top: -100px;
-            margin-bottom: -50px;
+            margin-bottom: 50px;
+        }
+
+        .logoCont svg {
+            max-height: 120px;
         }
 
         article, article address, table.meta, table.inventory {
@@ -211,24 +214,26 @@
         <%= invoice.data.number %>
     </h1>
     <p style="text-align: center;">
-        <%- lang === 'pl' && copy ? '<s>ORYGINAŁ</s> | KOPIA' : '' %>
-        <%- lang === 'pl' && !copy ? 'ORYGINAŁ | <s>KOPIA</s>' : '' %>
-        <%- lang !== 'pl' && copy ? '<s>ORYGINAL</s> | COPY' : '' %>
-        <%- lang !== 'pl' && !copy ? 'ORYGINAL | <s>COPY</s>' : '' %>
+        <%- lang === 'pl' && copy === '1' ? '<s>ORYGINAŁ</s> | KOPIA' : '' %>
+        <%- lang === 'pl' && copy === '0' ? 'ORYGINAŁ | <s>KOPIA</s>' : '' %>
+        <%- lang === 'pl' && copy !== '0' && copy !== '1' ? 'ORYGINAŁ | KOPIA' : '' %>
+        <%- lang !== 'pl' && copy === '1' ? '<s>ORYGINAL</s> | COPY' : '' %>
+        <%- lang !== 'pl' && copy === '0' ? 'ORYGINAL | <s>COPY</s>' : '' %>
+        <%- lang !== 'pl' && copy !== '0' && copy !== '1' ? 'ORYGINAL | COPY' : '' %>
     </p>
     <div class="invoiceHeader">
         <div class="data">
             <h2><%= lang === 'pl' ? 'Sprzedawca:' : 'Seller:' %></h2>
             <p><%= invoice.data.company.name %></p>
-            <p><%= lang === 'pl' ? 'NIP: ' : 'Vat id: ' %><%= invoice.data.company.vatId %></p>
             <p><%= invoice.data.company.address %></p>
+            <p><%= lang === 'pl' ? 'NIP: ' : 'Vat id: ' %><%= invoice.data.company.vatId %></p>
             <p><%= lang === 'pl' ? 'Konto bankowe: ' : 'Bank account: ' %> <%= invoice.data.company.accountNumber %> <%= invoice.data.company.accountProvider %></p>
 
             <br>
             <h2><%= lang === 'pl' ? 'Nabywca:' : 'Contractor:' %></h2>
             <p><%= invoice.data.contractor.name %></p>
-            <p><%= lang === 'pl' ? 'NIP:' : 'Vat id:' %><%= invoice.data.contractor.vatId %></p>
             <p><%= invoice.data.contractor.address %></p>
+            <p><%= lang === 'pl' ? 'NIP: ' : 'Vat id:' %><%= invoice.data.contractor.vatId %></p>
         </div>
         <div class="info">
             <div class="logo"><%- invoice.data.company.logo ? '<div class="logoCont">' + invoice.data.company.logo + '</div>' : '' %></div>
@@ -252,7 +257,7 @@
 </header>
 
 <%- !invoice.data.withVat ? (lang === 'pl'
-        ? '<div style="margin-bottom: 60px; text-align:center;">Podmiot zwolniony z VAT na podstawie art. 43 ust. 1 pkt 28 ustawy o podatku od towarów i usług.</div>'
+        ? '<div style="margin-bottom: 60px; text-align:center;">Podmiot zwolniony z VAT na podstawie art. 113 ustawy o podatku od towarów i usług.</div>'
         : '<div style="margin-bottom: 60px; text-align:center;">Invoice without VAT tax.</div>') : '' %>
 
 <article>
@@ -275,7 +280,7 @@
                 <td><span><%= row.amount %><%= lang === 'pl' && row.unit === 'pc(s)' ? 'szt.' : row.unit %></span></td>
                 <td><span><%= row.price %> zł</span></td>
                 <td><span><%= (row.price * row.amount).toFixed(2) %> zł</span></td>
-                <td><span><%= row.vat ? row.vat + '%' : '0%' %></span></td>
+                <td><span><%= row.vat ? row.vat + '%' : 'zw' %></span></td>
                 <td><span><%= (row.vat ? (row.price * (row.vat / 100) * row.amount).toFixed(2) + ' zł' : '0 zł') %></span></td>
                 <td>
                     <span><%= row.vat ? ((row.price * row.amount) * (1 + row.vat / 100)).toFixed(2) : (row.price * row.amount).toFixed(2) %> zł</span>
@@ -342,7 +347,7 @@
                     <tr>
                         <% let total = groupedRows.reduce((total, curr) => parseFloat(total) + parseFloat((parseFloat(curr.price) * curr.amount).toFixed(2)), 0.00)  %>
                         <td><%= total %> zł</td>
-                        <td><%= !!groupedRows[0].vat ? groupedRows[0].vat + '%' : '0%' %></td>
+                        <td><%= !!groupedRows[0].vat ? groupedRows[0].vat + '%' : 'zw' %></td>
                         <td><%= !!groupedRows[0].vat ? groupedRows.reduce((total, curr) => parseFloat(total.toFixed(2)) + parseFloat((curr.price * curr.amount * (curr.vat / 100)).toFixed(2)), 0) : '0'  %> zł</td>
                         <td><%= !!groupedRows[0].vat ? groupedRows.reduce((total, curr) => parseFloat(total.toFixed(2)) + parseFloat((curr.price * curr.amount * (1 + curr.vat / 100)).toFixed(2)), 0) : total  %> zł</td>
                     </tr>
@@ -354,13 +359,15 @@
 </article>
 <div class="container" style="text-align: center; margin-top: 150px;">
     <div class="item" style="padding: 0px 15px;">
+        <%= invoice.data.createdBy %>
         <hr>
-        <small><%= lang === 'pl' ? 'Podpis osoby upoważnionej do wystawienia' : 'Seller sign' %></small>
+        <small><%= lang === 'pl' ? 'Wystawił(a)' : 'Seller' %></small>
     </div>
 
     <div class="item" style="padding: 0px 15px;">
+        <br>
         <hr>
-        <small><%= lang === 'pl' ? 'Podpis osoby upoważnionej do odbioru' : 'Contractor sign' %></small>
+        <small><%= lang === 'pl' ? 'Odebrał(a)' : 'Contractor' %></small>
     </div>
 </div>
 </body>

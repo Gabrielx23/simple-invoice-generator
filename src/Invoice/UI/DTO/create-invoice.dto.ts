@@ -23,7 +23,7 @@ export class CreateInvoiceDTO {
 
   contractor: ContractorEntity;
 
-  @ApiProperty({ example: '91e56daf-04ef-4bbc-abe7-5d3a8ee41101' })
+  @ApiProperty({ example: '9963066f-0482-4091-b208-915beffb21c5' })
   @IsUUID()
   companyId: string;
 

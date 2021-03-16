@@ -14,7 +14,7 @@ export class CompanyDTO {
   name: string;
 
   @ApiProperty({ example: '11111111111111111111111111' })
-  @Length(26)
+  @MaxLength(26)
   accountNumber: string;
 
   @ApiProperty({ example: 'Pekao' })
