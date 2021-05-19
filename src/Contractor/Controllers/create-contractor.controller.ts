@@ -34,6 +34,6 @@ export class CreateContractorController {
       throw new BadRequestException('Vat id or abbreviation already in use!');
     }
 
-    return await this.contractorService.create(dto);
+    return this.contractorService.create(dto);
   }
 }

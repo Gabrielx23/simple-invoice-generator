@@ -7,6 +7,6 @@ export class ContractorGateway {
   constructor(private readonly contractorService: ContractorService) {}
 
   public async getContractorById(id: string): Promise<ContractorEntity> {
-    return await this.contractorService.findOne(id);
+    return this.contractorService.findOne(id);
   }
 }

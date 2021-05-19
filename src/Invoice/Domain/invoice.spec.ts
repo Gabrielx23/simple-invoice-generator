@@ -10,10 +10,12 @@ const policyMock = () => ({
 
 const invoiceRowEntity1 = new InvoiceRowEntity();
 invoiceRowEntity1.price = '10.00';
+invoiceRowEntity1.amount = 1;
 invoiceRowEntity1.vat = 23;
 
 const invoiceRowEntity2 = new InvoiceRowEntity();
 invoiceRowEntity2.price = '10.00';
+invoiceRowEntity2.amount = 1;
 invoiceRowEntity2.vat = null;
 
 const invoiceEntity = new InvoiceEntity();

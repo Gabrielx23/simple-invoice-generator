@@ -42,6 +42,6 @@ export class DeleteContractorController {
       );
     }
 
-    return await this.contractorService.delete(contractor);
+    return this.contractorService.delete(contractor);
   }
 }

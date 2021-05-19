@@ -31,6 +31,6 @@ export class CreateCompanyController {
       throw new BadRequestException('Vat id already in use!');
     }
 
-    return await this.companyService.create(dto);
+    return this.companyService.create(dto);
   }
 }

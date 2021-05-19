@@ -45,6 +45,6 @@ export class UpdateCompanyController {
       throw new BadRequestException('Vat id already in use!');
     }
 
-    return await this.companyService.update(company, dto);
+    return this.companyService.update(company, dto);
   }
 }

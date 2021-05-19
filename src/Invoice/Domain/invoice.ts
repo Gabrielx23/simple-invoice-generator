@@ -50,7 +50,7 @@ export class Invoice extends AggregateRoot {
     this.data.total = total.toFixed(2);
   }
 
-  public getTotalWithoutVat(): string {
+  public getTotalWithoutVat(): any {
     let total = 0;
 
     for (const row of this.rows) {

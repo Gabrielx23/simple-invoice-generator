@@ -47,6 +47,6 @@ export class CreateInvoiceController {
     dto.contractor = contractor;
     dto.company = company;
 
-    await this.createAction.execute(dto);
+    this.createAction.execute(dto);
   }
 }

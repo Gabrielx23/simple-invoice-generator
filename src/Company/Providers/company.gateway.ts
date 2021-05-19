@@ -7,6 +7,6 @@ export class CompanyGateway {
   constructor(private readonly companyService: CompanyService) {}
 
   public async getCompanyById(id: string): Promise<CompanyEntity> {
-    return await this.companyService.findOne(id);
+    return this.companyService.findOne(id);
   }
 }

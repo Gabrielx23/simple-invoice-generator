@@ -14,31 +14,31 @@ export class ContractorService {
 
   public async create(dto: ContractorDTO): Promise<ContractorEntity> {
     const contractor = this.contractors.create(dto);
-    return await this.contractors.save(contractor);
+    return this.contractors.save(contractor);
   }
 
   public async paginate(
     options: IPaginationOptions,
   ): Promise<Pagination<ContractorEntity>> {
-    return await this.contractors.paginate(options);
+    return this.contractors.paginate(options);
   }
 
   public async findOne(id: string): Promise<ContractorEntity> {
-    return await this.contractors.findOne({ id });
+    return this.contractors.findOne({ id });
   }
 
   public async findOneWithInvoices(id: string): Promise<ContractorEntity> {
-    return await this.contractors.findOneWithInvoices(id);
+    return this.contractors.findOneWithInvoices(id);
   }
 
   public async findOneByAbbreviation(
     abbreviation: string,
   ): Promise<ContractorEntity> {
-    return await this.contractors.findOne({ abbreviation });
+    return this.contractors.findOne({ abbreviation });
   }
 
   public async findOneByVatId(vatId: string): Promise<ContractorEntity> {
-    return await this.contractors.findOne({ vatId });
+    return this.contractors.findOne({ vatId });
   }
 
   public async update(
@@ -47,7 +47,7 @@ export class ContractorService {
   ): Promise<ContractorEntity> {
     const toUpdate = { ...contractor, ...data };
 
-    return await this.contractors.save(toUpdate);
+    return this.contractors.save(toUpdate);
   }
 
   public async delete(contractor: ContractorEntity): Promise<ContractorEntity> {

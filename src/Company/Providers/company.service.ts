@@ -14,25 +14,25 @@ export class CompanyService {
 
   public async create(dto: CompanyDTO): Promise<CompanyEntity> {
     const company = this.companies.create(dto);
-    return await this.companies.save(company);
+    return this.companies.save(company);
   }
 
   public async paginate(
     options: IPaginationOptions,
   ): Promise<Pagination<CompanyEntity>> {
-    return await this.companies.paginate(options);
+    return this.companies.paginate(options);
   }
 
   public async findOne(id: string): Promise<CompanyEntity> {
-    return await this.companies.findOne({ id });
+    return this.companies.findOne({ id });
   }
 
   public async findOneWithInvoices(id: string): Promise<CompanyEntity> {
-    return await this.companies.findOneWithInvoices(id);
+    return this.companies.findOneWithInvoices(id);
   }
 
   public async findOneByVatId(vatId: string): Promise<CompanyEntity> {
-    return await this.companies.findOne({ vatId });
+    return this.companies.findOne({ vatId });
   }
 
   public async update(
@@ -41,7 +41,7 @@ export class CompanyService {
   ): Promise<CompanyEntity> {
     const toUpdate = { ...company, ...data };
 
-    return await this.companies.save(toUpdate);
+    return this.companies.save(toUpdate);
   }
 
   public async delete(company: CompanyEntity): Promise<CompanyEntity> {

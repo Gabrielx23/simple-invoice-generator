@@ -42,6 +42,6 @@ export class DeleteCompanyController {
       );
     }
 
-    return await this.companyService.delete(company);
+    return this.companyService.delete(company);
   }
 }

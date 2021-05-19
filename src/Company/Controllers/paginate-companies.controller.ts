@@ -25,6 +25,6 @@ export class PaginateCompaniesController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ): Promise<Pagination<CompanyEntity>> {
-    return await this.companyService.paginate({ page, limit });
+    return this.companyService.paginate({ page, limit });
   }
 }

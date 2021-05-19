@@ -55,6 +55,6 @@ export class UpdateContractorController {
       throw new BadRequestException('Vat id or abbreviation already in use!');
     }
 
-    return await this.contractorService.update(contractor, dto);
+    return this.contractorService.update(contractor, dto);
   }
 }

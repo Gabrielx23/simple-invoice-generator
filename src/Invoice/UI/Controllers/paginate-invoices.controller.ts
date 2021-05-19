@@ -25,6 +25,6 @@ export class PaginateInvoicesController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ): Promise<Pagination<InvoiceEntity>> {
-    return await this.paginateInvoiceQuery.execute({ page, limit });
+    return this.paginateInvoiceQuery.execute({ page, limit });
   }
 }

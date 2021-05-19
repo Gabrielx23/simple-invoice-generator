@@ -10,6 +10,6 @@ export class PaginateInvoicesQuery {
   public async execute(
     options: IPaginationOptions,
   ): Promise<Pagination<InvoiceEntity>> {
-    return await this.invoices.paginate(options);
+    return this.invoices.paginate(options);
   }
 }

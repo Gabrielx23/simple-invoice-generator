@@ -35,6 +35,6 @@ export class DeleteInvoiceController {
       throw new NotFoundException('Invoice not exist!');
     }
 
-    await this.deleteInvoiceAction.execute(invoice.data.id);
+    this.deleteInvoiceAction.execute(invoice.data.id);
   }
 }
